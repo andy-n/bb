@@ -630,11 +630,10 @@ function ThreadDetailViewInternal(props: ThreadRoutePathArgs) {
     },
   );
   const pendingInteractions = pendingInteractionsQuery.data ?? [];
-  const pendingInteractionsInitialLoading =
-    isPendingInteractionStateUnknown(
-      pendingInteractionsQuery.data,
-      pendingInteractionsQuery.isFetching,
-    );
+  const pendingInteractionsInitialLoading = isPendingInteractionStateUnknown(
+    pendingInteractionsQuery.data,
+    pendingInteractionsQuery.isFetching,
+  );
   const hasPendingInteraction =
     getLatestPendingInteraction(pendingInteractions) !== null;
   const { data: queuedMessagesForEditEligibility = [] } =
@@ -2682,6 +2681,7 @@ function ThreadDetailViewInternal(props: ThreadRoutePathArgs) {
             onOpenLink={handleOpenTimelineLink}
             onOpenLocalFileLink={handleOpenTimelineLocalFileLink}
             resolveMentionLink={resolveMentionLink}
+            threadId={thread.id}
             workspaceRootPath={environment?.path ?? undefined}
           >
             <PluginPanelTabContent
