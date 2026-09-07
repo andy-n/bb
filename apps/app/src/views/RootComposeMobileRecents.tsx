@@ -268,7 +268,7 @@ function MobileRecentThreadRow({
   return (
     <li
       className={cn(
-        "flex items-center rounded-md pr-2",
+        "flex items-center gap-1 rounded-md pr-2",
         MOBILE_RECENT_ROW_HEIGHT_CLASS,
         highlighted && "bg-surface-selected",
       )}
@@ -337,6 +337,7 @@ function MobileRecentThreadRow({
       </RouteAnchor>
       {hasChildren ? (
         <SidebarChildToggleChevron
+          className="size-11"
           isCollapsed={isCollapsed}
           expandLabel={`Show threads under ${threadTitle}`}
           collapseLabel={`Hide threads under ${threadTitle}`}
