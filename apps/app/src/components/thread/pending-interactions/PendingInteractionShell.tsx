@@ -20,21 +20,17 @@ export interface PendingInteractionSourceThread {
 interface PendingInteractionShellProps {
   label: string;
   title?: string;
-  summary?: string | null;
   initiallyExpanded: boolean;
   errorMessage?: string | null;
-  footer?: (layout: PendingInteractionLayout) => ReactNode;
+  footer?: ReactNode;
   children?: (isExpanded: boolean) => ReactNode;
   sourceThread?: PendingInteractionSourceThread;
   testId: string;
 }
 
-export type PendingInteractionLayout = "strip" | "card";
-
 export function PendingInteractionShell({
   label,
   title,
-  summary,
   initiallyExpanded,
   errorMessage,
   footer,
@@ -85,7 +81,7 @@ export function PendingInteractionShell({
     <NavLink
       to={sourceThread.href}
       title={sourceThread.title}
-      className="min-w-24 shrink-[3] truncate text-xs text-subtle-foreground no-underline hover:underline"
+      className="min-w-0 max-w-[40%] shrink-[3] truncate text-xs text-subtle-foreground no-underline hover:underline"
     >
       From {sourceThread.title}
     </NavLink>
@@ -109,37 +105,24 @@ export function PendingInteractionShell({
           type="button"
           aria-controls={contentId}
           aria-expanded={isExpanded}
-          aria-label={isExpanded ? label : (title ?? label)}
+          aria-label={label}
           onClick={handleToggle}
           className="flex min-h-7 min-w-0 flex-1 items-center gap-2 rounded-md text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         >
           <AttentionDot />
           <span
-            title={isExpanded ? label : (title ?? label)}
+            title={label}
             className={cn(
-              "min-w-0 truncate text-sm text-foreground",
-              isExpanded ? "font-semibold" : "font-medium",
+              "min-w-0 text-sm text-foreground",
+              isExpanded
+                ? "whitespace-normal font-semibold"
+                : "truncate font-medium",
             )}
           >
-            {isExpanded ? label : (title ?? label)}
+            {label}
           </span>
-          {!isExpanded && summary ? (
-            <span
-              className="hidden min-w-0 shrink-[2] truncate font-mono text-xs text-muted-foreground @2xl:block"
-              title={summary}
-            >
-              {summary}
-            </span>
-          ) : null}
         </button>
-        <div className={isExpanded ? "contents" : "hidden @2xl:contents"}>
-          {sourceThreadLink}
-        </div>
-        {!isExpanded && footer ? (
-          <div className="hidden shrink-0 items-center gap-1.5 @2xl:flex">
-            {footer("strip")}
-          </div>
-        ) : null}
+        {isExpanded ? sourceThreadLink : null}
         {!isExpanded && errorMessage ? (
           <span
             aria-live="polite"
@@ -171,7 +154,7 @@ export function PendingInteractionShell({
             ) : null}
             {footer ? (
               <div className="mt-3 flex flex-wrap items-center gap-2">
-                {footer("card")}
+                {footer}
               </div>
             ) : null}
           </div>

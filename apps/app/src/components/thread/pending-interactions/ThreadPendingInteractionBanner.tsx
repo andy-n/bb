@@ -1,7 +1,6 @@
 import {
   PendingInteractionShell,
   type PendingInteractionSourceThread,
-  type PendingInteractionLayout,
 } from "./PendingInteractionShell";
 import { useMemo, useState, type ReactNode } from "react";
 import {
@@ -28,7 +27,6 @@ import { getDetailScrollMaxHeightClass } from "@/components/ui/detail-scroll-siz
 import { UserQuestionAnswerForm } from "@/components/thread/user-questions/UserQuestionInteractionContent.js";
 import { useResolveThreadPendingInteraction } from "@/hooks/mutations/thread-interaction-mutations";
 import { PluginPendingInteractionComposer } from "@/components/plugin/PluginPendingInteractionComposer";
-import { PromptBannerActionButton } from "@/components/promptbox/banner/prompt-banner-actions";
 import {
   classifyInteractionRequest,
   type InteractionRequestView,
@@ -70,7 +68,6 @@ interface UserQuestionPendingInteractionBannerProps {
 
 interface ApprovalSubject {
   title: string;
-  summary: string | null;
   body: ReactNode;
 }
 
@@ -193,21 +190,19 @@ function PlanReviewRequestBanner({
     <PendingInteractionShell
       label="Plan review"
       title={approval.reason ?? "Ready to code?"}
-      summary={planFilePath ?? firstLine(plan)}
       initiallyExpanded={false}
       errorMessage={mutationErrorMessage}
       sourceThread={sourceThread}
       testId="plan-review-banner"
-      footer={(layout) => (
+      footer={
         <ApprovalDecisionButtons
           decisions={approval.availableDecisions}
           disabled={submitDisabled}
-          layout={layout}
           loadingDecision={isResolving ? submittedDecision : null}
           onDecide={submitDecision}
           subjectKind="plan"
         />
-      )}
+      }
     >
       {() => (
         <div
@@ -241,14 +236,6 @@ function unwrapBacktickedCommand(command: string): string {
     !trimmed.slice(1, -1).includes("`")
     ? trimmed.slice(1, -1)
     : command;
-}
-
-function firstLine(text: string): string | null {
-  const line = text
-    .split("\n")
-    .map((candidate) => candidate.trim())
-    .find((candidate) => candidate.length > 0);
-  return line ?? null;
 }
 
 function ApprovalPendingInteractionBanner({
@@ -294,21 +281,19 @@ function ApprovalPendingInteractionBanner({
     <PendingInteractionShell
       label="Approval needed"
       title={view.title}
-      summary={view.summary}
       initiallyExpanded={false}
       errorMessage={mutationErrorMessage}
       sourceThread={sourceThread}
       testId="approval-banner"
-      footer={(layout) => (
+      footer={
         <ApprovalDecisionButtons
           decisions={payload.availableDecisions}
           disabled={submitDisabled}
-          layout={layout}
           loadingDecision={isResolving ? submittedDecision : null}
           onDecide={submitDecision}
           subjectKind={subject.kind}
         />
-      )}
+      }
     >
       {() => view.body}
     </PendingInteractionShell>
@@ -328,7 +313,6 @@ function ThreadUserQuestionPendingInteractionBanner({
       label={
         questions.length === 1 ? "Question" : `${questions.length} questions`
       }
-      summary={questions[0]?.prompt ?? null}
       initiallyExpanded
       sourceThread={sourceThread}
       testId="user-question-banner"
@@ -348,7 +332,6 @@ function ThreadUserQuestionPendingInteractionBanner({
 interface ApprovalDecisionButtonsProps {
   decisions: readonly PendingInteractionApprovalDecision[];
   disabled: boolean;
-  layout: PendingInteractionLayout;
   loadingDecision: PendingInteractionApprovalDecision | null;
   onDecide: (decision: PendingInteractionApprovalDecision) => void;
   subjectKind: PendingInteractionApprovalSubject["kind"];
@@ -357,7 +340,6 @@ interface ApprovalDecisionButtonsProps {
 function ApprovalDecisionButtons({
   decisions,
   disabled,
-  layout,
   loadingDecision,
   onDecide,
   subjectKind,
@@ -372,21 +354,15 @@ function ApprovalDecisionButtons({
       decision={decision}
       disabled={disabled}
       isLoading={loadingDecision === decision}
-      layout={layout}
       onClick={() => onDecide(decision)}
       subjectKind={subjectKind}
-      className={
-        layout === "card" && index === 0 && decision === "deny"
-          ? "mr-auto"
-          : undefined
-      }
+      className={index === 0 && decision === "deny" ? "mr-auto" : undefined}
     />
   ));
 }
 
 interface ApprovalDecisionButtonProps {
   className?: string;
-  layout: PendingInteractionLayout;
   decision: PendingInteractionApprovalDecision;
   disabled: boolean;
   isLoading: boolean;
@@ -399,7 +375,6 @@ function ApprovalDecisionButton({
   decision,
   disabled,
   isLoading,
-  layout,
   onClick,
   subjectKind,
 }: ApprovalDecisionButtonProps) {
@@ -407,22 +382,6 @@ function ApprovalDecisionButton({
   const spinner = isLoading ? (
     <Icon name="Spinner" className="size-3 animate-spin" />
   ) : null;
-  if (layout === "strip") {
-    return (
-      <PromptBannerActionButton
-        disabled={disabled}
-        onClick={onClick}
-        className={cn(
-          "gap-1",
-          compactApprovalDecisionButtonClass(decision),
-          className,
-        )}
-      >
-        {spinner}
-        {label}
-      </PromptBannerActionButton>
-    );
-  }
   return (
     <Button
       type="button"
@@ -436,19 +395,6 @@ function ApprovalDecisionButton({
       {label}
     </Button>
   );
-}
-
-function compactApprovalDecisionButtonClass(
-  decision: PendingInteractionApprovalDecision,
-): string | undefined {
-  switch (decision) {
-    case "allow_once":
-      return "border-foreground bg-foreground text-background hover:bg-foreground/90 hover:text-background";
-    case "allow_for_session":
-      return undefined;
-    case "deny":
-      return "border-transparent bg-transparent shadow-none";
-  }
 }
 
 function approvalDecisionButtonVariant(
@@ -613,7 +559,6 @@ function buildApprovalSubject({
         );
       return {
         title: payload.reason ?? "Do you want to run this command?",
-        summary: command ? firstLine(command) : null,
         body: command ? (
           <CommandPreview command={command} detailLines={detailLines} />
         ) : null,
@@ -624,7 +569,6 @@ function buildApprovalSubject({
         formatPendingInteractionSubjectDetailLines(interaction);
       return {
         title: payload.reason ?? "Do you want to make these changes?",
-        summary: subject.writeScope,
         body:
           detailLines.length > 0 ? (
             <ApprovalDetailList
@@ -639,7 +583,6 @@ function buildApprovalSubject({
         formatPendingInteractionSubjectDetailLines(interaction);
       return {
         title: payload.reason ?? "Do you want to grant this permission?",
-        summary: subject.toolName ?? detailLines[0] ?? null,
         body:
           detailLines.length > 0 ? (
             <ApprovalDetailList
@@ -653,7 +596,6 @@ function buildApprovalSubject({
       const ask = describePendingInteractionToolUse({ ...payload, subject });
       return {
         title: ask.title,
-        summary: ask.headline ?? ask.tool,
         body: <ToolUseAskCard ask={ask} />,
       };
     }

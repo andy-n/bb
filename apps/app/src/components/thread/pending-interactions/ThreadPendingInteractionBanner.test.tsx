@@ -366,7 +366,7 @@ describe("ThreadPendingInteractionBanner presentation detail images", () => {
 });
 
 describe("ThreadPendingInteractionBanner collapsed strip", () => {
-  it("arrives collapsed with the reason, the first command line, and every decision", () => {
+  it("arrives collapsed with only the label and exposes decisions after expansion", () => {
     renderBanner(commandApproval);
     const banner = screen.getByTestId("approval-banner");
     expect(banner.hasAttribute("data-expanded")).toBe(false);
@@ -375,6 +375,8 @@ describe("ThreadPendingInteractionBanner collapsed strip", () => {
       "python3 -m unittest discover -s tests 2>&1 | tail -20",
     );
     expect(isHidden(screen.getByTestId("command-preview"))).toBe(true);
+    expect(screen.queryByRole("button", { name: "Allow once" })).toBeNull();
+    expandBanner();
     fireEvent.click(screen.getByRole("button", { name: "Allow once" }));
     expect(mocks.resolveMutateAsync).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -409,7 +411,7 @@ describe("ThreadPendingInteractionBanner collapsed strip", () => {
   it("toggles through the title without submitting an approval", () => {
     renderBanner(commandApproval);
     const title = screen.getByRole("button", {
-      name: "Not in allowlist: bash",
+      name: "Approval needed",
     });
     title.focus();
     fireEvent.click(title);
@@ -421,7 +423,7 @@ describe("ThreadPendingInteractionBanner collapsed strip", () => {
     fireEvent.click(expandedTitle);
     expect(
       screen
-        .getByRole("button", { name: "Not in allowlist: bash" })
+        .getByRole("button", { name: "Approval needed" })
         .getAttribute("aria-expanded"),
     ).toBe("false");
     expect(mocks.resolveMutateAsync).not.toHaveBeenCalled();
@@ -473,7 +475,7 @@ describe("ThreadPendingInteractionBanner collapsed strip", () => {
     ).toBe(false);
   });
 
-  it("keeps the source thread reachable from the strip and the card", () => {
+  it("keeps the source thread reachable after expanding", () => {
     render(
       <QueryClientProvider client={new QueryClient()}>
         <MemoryRouter>
@@ -489,11 +491,14 @@ describe("ThreadPendingInteractionBanner collapsed strip", () => {
       </QueryClientProvider>,
     );
     expect(
+      screen.queryByRole("link", { name: "From Install tools" }),
+    ).toBeNull();
+    expandBanner();
+    expect(
       screen
         .getByRole("link", { name: "From Install tools" })
         .getAttribute("href"),
     ).toBe("/threads/thr_child");
-    expandBanner();
     expect(
       screen.getByRole("link", { name: "From Install tools" }),
     ).toBeTruthy();

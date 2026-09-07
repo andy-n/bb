@@ -229,7 +229,7 @@ export function Overview() {
       <StoryRow
         className="grid-cols-1 gap-y-2 px-0 md:grid-cols-[210px_minmax(0,1fr)]"
         label="command approval"
-        hint="arrives as a one-line strip: reason, first command line, decisions; the chevron opens the card and Esc collapses it"
+        hint="arrives as a one-line label; expand to see the reason, command, and decisions"
       >
         <PromptStage>
           <ThreadPendingInteractionBanner
