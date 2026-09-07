@@ -323,13 +323,14 @@ function createContext(
 }
 
 describe("Modal machine provider", () => {
-  it("keeps the Modal mark on a square icon canvas", () => {
+  it("bundles Modal's official one-color icon mark", () => {
     const svg = readFileSync(
       new URL("./modal-logo.svg", import.meta.url),
       "utf8",
     );
-    expect(svg).toContain('width="404" height="404"');
-    expect(svg).toContain('viewBox="0 -96.5 404 404"');
+    expect(svg).toContain('width="611" height="317"');
+    expect(svg).toContain('viewBox="0 0 611 317"');
+    expect(svg).toContain('fill="black"');
   });
 
   it("registers only a machine provider with the Modal asset and picker sugar", async () => {

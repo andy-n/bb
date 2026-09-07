@@ -74,9 +74,15 @@ in the image or injected environment.
 
 ## Logo and trademark
 
-The bundled `modal-logo.svg` is the full-color `Modal-IconMark.svg` distributed
-through [Modal's official brand assets](https://modal.com/brand). Modal and its
-logo are trademarks of Modal Labs, Inc. The asset remains Modal's property and
-is bundled only to identify the service this plugin integrates with; no license
-to reuse the mark separately is granted. Use remains subject to Modal's
-published terms and brand guidance.
+The bundled `modal-logo.svg` is an unmodified copy of
+[`Modal-IconMark-Dark-OneColor.svg`](https://drive.google.com/file/d/1JvQGLrZsQvnpZu5DmUafxXPGHXDk6TsI/view),
+the web one-color icon mark in [Modal's current official brand
+assets](https://modal.com/brand). The light one-color file published beside it
+uses the same geometry; bb supplies the visible color through its icon mask.
+
+Modal's brand-asset folder publishes no separate license or attribution file.
+Modal and its logo are trademarks of Modal Labs, Inc., and Modal's
+[terms](https://modal.com/legal/terms) reserve its intellectual-property
+rights. The mark remains Modal's property and is bundled only to identify the
+service this plugin integrates with; no license to reuse it separately is
+granted or implied.
