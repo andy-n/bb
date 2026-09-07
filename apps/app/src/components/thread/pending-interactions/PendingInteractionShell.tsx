@@ -41,6 +41,7 @@ export function PendingInteractionShell({
   const [isExpanded, setIsExpanded] = useState(initiallyExpanded);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const contentId = useId();
+  const errorId = useId();
   const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     if (event.key === "Escape" && isExpanded && !event.defaultPrevented) {
       event.preventDefault();
@@ -71,8 +72,13 @@ export function PendingInteractionShell({
   );
   const errorNode = errorMessage ? (
     <div
+      id={errorId}
       aria-live="polite"
-      className="mx-3 mb-3 rounded-md border border-surface-destructive-border bg-surface-destructive px-2 py-1 text-xs text-destructive-text"
+      className={
+        isExpanded
+          ? "mx-3 mb-3 rounded-md border border-surface-destructive-border bg-surface-destructive px-2 py-1 text-xs text-destructive-text"
+          : "sr-only"
+      }
     >
       {errorMessage}
     </div>
@@ -106,10 +112,11 @@ export function PendingInteractionShell({
           aria-controls={contentId}
           aria-expanded={isExpanded}
           aria-label={label}
+          aria-describedby={errorMessage ? errorId : undefined}
           onClick={handleToggle}
           className="flex min-h-7 min-w-0 flex-1 items-center gap-2 rounded-md text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         >
-          <AttentionDot />
+          <AttentionDot hasError={Boolean(errorMessage)} />
           <span
             title={label}
             className={cn(
@@ -123,15 +130,6 @@ export function PendingInteractionShell({
           </span>
         </button>
         {isExpanded ? sourceThreadLink : null}
-        {!isExpanded && errorMessage ? (
-          <span
-            aria-live="polite"
-            title={errorMessage}
-            className="min-w-0 flex-1 truncate text-xs text-destructive-text"
-          >
-            {errorMessage}
-          </span>
-        ) : null}
         {toggle}
       </div>
       <Activity mode={isExpanded ? "visible" : "hidden"}>
@@ -160,16 +158,21 @@ export function PendingInteractionShell({
           </div>
         </ThreadQuestionFormHost>
       </Activity>
-      {isExpanded ? errorNode : null}
+      {errorNode}
     </section>
   );
 }
 
-function AttentionDot() {
+function AttentionDot({ hasError }: { hasError: boolean }) {
   return (
     <span
       aria-hidden="true"
-      className="size-2 shrink-0 rounded-full bg-attention ring-[3px] ring-surface-attention"
+      className={cn(
+        "size-2 shrink-0 rounded-full ring-[3px]",
+        hasError
+          ? "bg-destructive-text ring-surface-destructive"
+          : "bg-attention ring-surface-attention",
+      )}
     />
   );
 }
