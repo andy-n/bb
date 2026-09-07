@@ -27,13 +27,11 @@ function liveStatusFromThread(thread: SdkThread): TaskThreadLiveStatus {
   }
 }
 
-function trackedThreads(store: TasksApiStore, threadId?: string): TaskThread[] {
+function trackedThreads(store: TasksApiStore): TaskThread[] {
   const tracked: TaskThread[] = [];
   for (const task of store.tasks.listTasks()) {
     for (const thread of store.tasks.listTaskThreads(task.id)) {
-      if (threadId === undefined || thread.threadId === threadId) {
-        tracked.push(thread);
-      }
+      tracked.push(thread);
     }
   }
   return tracked;
@@ -90,7 +88,7 @@ function transitionTrackedThread(
   threadId: string,
   liveStatus: TaskThreadLiveStatus,
 ): void {
-  for (const thread of trackedThreads(store, threadId)) {
+  for (const thread of store.tasks.listTaskThreadsByThreadId(threadId)) {
     transitionThread(bb, store, thread, liveStatus);
   }
 }
