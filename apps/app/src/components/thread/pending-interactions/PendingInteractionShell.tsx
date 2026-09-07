@@ -114,19 +114,23 @@ export function PendingInteractionShell({
           aria-label={label}
           aria-describedby={errorMessage ? errorId : undefined}
           onClick={handleToggle}
-          className="flex min-h-7 min-w-0 flex-1 items-center gap-2 rounded-md text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          className="flex min-h-7 min-w-0 flex-1 items-center rounded-md text-left focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         >
-          <AttentionDot hasError={Boolean(errorMessage)} />
-          <span
-            title={label}
-            className={cn(
-              "min-w-0 text-sm text-foreground",
-              isExpanded
-                ? "whitespace-normal font-semibold"
-                : "truncate font-medium",
-            )}
-          >
-            {label}
+          <span className="flex min-w-0 flex-1 items-start gap-2">
+            <span className="flex h-[1lh] shrink-0 items-center text-sm">
+              <AttentionDot hasError={Boolean(errorMessage)} />
+            </span>
+            <span
+              title={label}
+              className={cn(
+                "min-w-0 text-sm text-foreground",
+                isExpanded
+                  ? "whitespace-normal font-semibold"
+                  : "truncate font-medium",
+              )}
+            >
+              {label}
+            </span>
           </span>
         </button>
         {isExpanded ? sourceThreadLink : null}
