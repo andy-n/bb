@@ -2,7 +2,7 @@
   "expo": {
     "name": "bb",
     "slug": "bb-app",
-    "owner": "bb-team",
+    "owner": "andy-n",
     "version": "0.39.0",
     "scheme": "bb",
     "orientation": "default",
@@ -14,7 +14,8 @@
         "light": "./assets/icon.png",
         "dark": "./assets/icon-dark.png"
       },
-      "bundleIdentifier": "app.getbb.mobile",
+      "bundleIdentifier": "info.andyn.bb",
+      "appleTeamId": "F22WW459VD",
       "supportsTablet": true,
       "infoPlist": {
         "NSLocalNetworkUsageDescription": "bb connects to a bb server on your local network or tailnet.",
@@ -106,7 +107,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": "3dca8cca-f48a-4c3a-ba3d-3af40e58a588"
+        "projectId": "3e3de2e3-abf9-4739-bc0d-cb3fd6bb3bb6"
       }
     }
   }
