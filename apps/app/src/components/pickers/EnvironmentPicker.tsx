@@ -16,6 +16,7 @@ import {
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@bb/shared-ui/dropdown-menu";
 import {
@@ -353,14 +354,6 @@ export function EnvironmentPickerUI({
         className={cn(OPTION_MENU_CONTENT_CLASS_NAME, "max-w-80")}
         mobileTitle="Environment"
       >
-        {onSelectMachineProvider === undefined ? null : (
-          <MachineProviderEnvironmentOptions
-            providers={creatableMachineProviders}
-            selectedProviderId={selectedMachineProviderId}
-            inputsControlProviderIds={machineInputsControlProviderIds}
-            onSelect={onSelectMachineProvider}
-          />
-        )}
         {isMachineMenu && availableMachines ? (
           <MachineGroupedEnvironmentOptions
             machines={availableMachines}
@@ -389,6 +382,14 @@ export function EnvironmentPickerUI({
             onSelectProvider={onSelectProvider}
           />
         )}
+        {onSelectMachineProvider === undefined ? null : (
+          <MachineProviderEnvironmentOptions
+            providers={creatableMachineProviders}
+            selectedProviderId={selectedMachineProviderId}
+            inputsControlProviderIds={machineInputsControlProviderIds}
+            onSelect={onSelectMachineProvider}
+          />
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -408,29 +409,34 @@ function MachineProviderEnvironmentOptions({
   const rows = providers.filter((provider) => provider.environmentRow !== null);
   if (rows.length === 0) return null;
   return (
-    <DropdownMenuGroup>
-      {rows.map((provider) => {
-        const disabledReason = machineProviderDisabledReason(
-          provider,
-          inputsControlProviderIds,
-        );
-        const description =
-          provider.availability?.status === "setup-required"
-            ? provider.availability.message
-            : (disabledReason ?? undefined);
-        return (
-          <MachineProviderMenuItem
-            key={provider.id}
-            provider={provider}
-            label={provider.environmentRow?.displayName ?? provider.displayName}
-            description={description}
-            selected={selectedProviderId === provider.id}
-            disabled={disabledReason !== null}
-            onSelect={() => onSelect(provider)}
-          />
-        );
-      })}
-    </DropdownMenuGroup>
+    <>
+      <DropdownMenuSeparator />
+      <DropdownMenuGroup>
+        {rows.map((provider) => {
+          const disabledReason = machineProviderDisabledReason(
+            provider,
+            inputsControlProviderIds,
+          );
+          const description =
+            provider.availability?.status === "setup-required"
+              ? provider.availability.message
+              : (disabledReason ?? undefined);
+          return (
+            <MachineProviderMenuItem
+              key={provider.id}
+              provider={provider}
+              label={
+                provider.environmentRow?.displayName ?? provider.displayName
+              }
+              description={description}
+              selected={selectedProviderId === provider.id}
+              disabled={disabledReason !== null}
+              onSelect={() => onSelect(provider)}
+            />
+          );
+        })}
+      </DropdownMenuGroup>
+    </>
   );
 }
 

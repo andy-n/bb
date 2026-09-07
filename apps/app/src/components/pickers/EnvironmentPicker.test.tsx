@@ -4,7 +4,10 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import type { Host, ProjectSource } from "@bb/domain";
 import { makeHost } from "@bb/test-helpers/domain-fixtures";
 import { HOST_DAEMON_PROTOCOL_VERSION } from "@bb/host-daemon-contract";
-import type { SystemEnvironmentProvider } from "@bb/server-contract";
+import type {
+  SystemEnvironmentProvider,
+  SystemMachineProvider,
+} from "@bb/server-contract";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   EnvironmentPickerUI,
@@ -84,6 +87,28 @@ const optionalInputsProvider: SystemEnvironmentProvider = {
     type: "object",
     properties: { image: { type: "string" } },
   },
+};
+
+const modalMachineProvider: SystemMachineProvider = {
+  id: "modal-sandbox",
+  displayName: "Modal sandbox",
+  icon: "Box",
+  logoUrl: null,
+  pluginId: "environment-modal-sandbox",
+  requires: { gitRemote: true },
+  inputs: null,
+  acceptsEmptyInputs: true,
+  supportsSuspend: true,
+  environmentRow: {
+    displayName: "Modal sandbox",
+    environmentProviderId: checkoutProvider.id,
+  },
+  policy: {
+    idleSuspendMs: 60_000,
+    retire: { after: "last-thread", graceMs: 60_000 },
+    removeRetryMs: 60_000,
+  },
+  availability: null,
 };
 
 const host = makeHost({
@@ -290,6 +315,36 @@ describe("EnvironmentPickerUI", () => {
       optionalInputsProvider,
       host.id,
     );
+  });
+
+  it("puts machine-provider rows last after a separator", () => {
+    render(
+      <EnvironmentPickerUI
+        value="provider:project-checkout"
+        sources={sources}
+        host={host}
+        isLocal
+        providers={[checkoutProvider, branchProvider]}
+        selectedProviderHostId={host.id}
+        onSelectProvider={vi.fn()}
+        machineProviders={[modalMachineProvider]}
+        onSelectMachineProvider={vi.fn()}
+        modal={false}
+      />,
+    );
+
+    fireEvent.pointerDown(screen.getByRole("button", { name: "Environment" }), {
+      button: 0,
+    });
+
+    const menuItems = screen.getAllByRole("menuitem");
+    const modalItem = screen.getByRole("menuitem", {
+      name: /Modal sandbox/u,
+    });
+    const modalGroup = modalItem.closest('[role="group"]');
+    const separator = screen.getByRole("separator");
+    expect(menuItems.at(-1)).toBe(modalItem);
+    expect(modalGroup?.previousElementSibling).toBe(separator);
   });
 });
 

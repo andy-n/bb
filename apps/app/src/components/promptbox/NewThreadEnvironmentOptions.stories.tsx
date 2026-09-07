@@ -17,6 +17,7 @@ import {
   STORY_BRANCH_OPTIONS,
   STORY_PROJECTS,
   STORY_ENVIRONMENT_PROVIDERS,
+  STORY_MACHINE_PROVIDERS,
   STORY_PROJECT_SOURCES,
   STORY_WORKTREE_OPTIONS,
 } from "../../../.ladle/story-fixtures";
@@ -59,45 +60,44 @@ function EnvironmentOptionsStrip({
           className="h-7 px-1.5"
           modal={false}
         />
-        {projectless ? null : (
-          <>
-            <EnvironmentPickerUI
-              value={environmentValue}
-              sources={STORY_PROJECT_SOURCES}
-              host={makeHost({ id: HOST_IDS.local })}
-              isLocal
-              providers={STORY_ENVIRONMENT_PROVIDERS}
-              selectedProviderHostId={HOST_IDS.local}
-              onSelectProvider={noop}
-              muted
-              modal={false}
-              {...environment}
-            />
-            {showReuseEnvironmentPicker ? (
-              <ReuseEnvironmentPicker
-                options={STORY_WORKTREE_OPTIONS}
-                value={worktreeValue}
-                onChange={noop}
-                muted
-                modal={false}
-              />
-            ) : showBranchPicker ? (
-              <BranchPicker
-                variant="option"
-                muted
-                value={null}
-                options={STORY_BRANCH_OPTIONS}
-                placeholder="Branch from: main"
-                triggerLabel="Branch from: main"
-                triggerTitle="Branch from: main"
-                menuKind="base"
-                onChange={noop}
-                modal={false}
-                {...branch}
-              />
-            ) : null}
-          </>
-        )}
+        <EnvironmentPickerUI
+          value={environmentValue}
+          sources={STORY_PROJECT_SOURCES}
+          host={makeHost({ id: HOST_IDS.local })}
+          isLocal
+          providers={STORY_ENVIRONMENT_PROVIDERS}
+          projectless={projectless}
+          selectedProviderHostId={HOST_IDS.local}
+          onSelectProvider={noop}
+          machineProviders={STORY_MACHINE_PROVIDERS}
+          onSelectMachineProvider={noop}
+          muted
+          modal={false}
+          {...environment}
+        />
+        {showReuseEnvironmentPicker ? (
+          <ReuseEnvironmentPicker
+            options={STORY_WORKTREE_OPTIONS}
+            value={worktreeValue}
+            onChange={noop}
+            muted
+            modal={false}
+          />
+        ) : showBranchPicker ? (
+          <BranchPicker
+            variant="option"
+            muted
+            value={null}
+            options={STORY_BRANCH_OPTIONS}
+            placeholder="Branch from: main"
+            triggerLabel="Branch from: main"
+            triggerTitle="Branch from: main"
+            menuKind="base"
+            onChange={noop}
+            modal={false}
+            {...branch}
+          />
+        ) : null}
       </div>
     </div>
   );
@@ -173,11 +173,15 @@ export function Overview() {
         </StoryRow>
         <StoryRow
           label="no project · allowed"
-          hint="allowNoProject flag on, no project chosen — trigger reads 'Work in a project'"
+          hint="no project selected — Personal workspace appears before the divider and Modal sandbox"
         >
           <EnvironmentOptionsStrip
             project={{ value: null, allowNoProject: true }}
             projectless
+            environment={{
+              value: "provider:personal-workspace",
+              defaultOpen: true,
+            }}
           />
         </StoryRow>
         <StoryRow
